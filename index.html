@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDA — Nubank: Jornada do Consumidor & Funil de Conversão</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --roxo: #820AD1;
+    --roxo-escuro: #5C0A99;
+    --roxo-claro: #C77DFF;
+    --roxo-bg: #F3E8FF;
+    --preto: #0D0D0D;
+    --cinza: #6B6B6B;
+    --branco: #FAFAFA;
+    --tofu-cor: #FF6B6B;
+    --mofu-cor: #FFB347;
+    --bofu-cor: #6BCB77;
+    --pos-cor: #4D96FF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--branco);
+    color: var(--preto);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--preto);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(130,10,209,0.35) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    animation: pulse 6s ease-in-out infinite;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(130,10,209,0.2) 0%, transparent 70%);
+    bottom: -150px; left: -100px;
+    animation: pulse 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+  }
+
+  .hero-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--roxo-claro);
+    background: rgba(130,10,209,0.15);
+    border: 1px solid rgba(130,10,209,0.3);
+    padding: 8px 20px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    position: relative; z-index: 1;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 800;
+    line-height: 0.95;
+    color: #fff;
+    position: relative; z-index: 1;
+    margin-bottom: 8px;
+  }
+
+  .hero h1 span {
+    color: var(--roxo-claro);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 24px;
+    position: relative; z-index: 1;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 48px;
+    position: relative; z-index: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-meta-item {
+    text-align: center;
+  }
+
+  .hero-meta-item .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--roxo-claro);
+    display: block;
+  }
+
+  .hero-meta-item .lbl {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .scroll-cta {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-cta::after {
+    content: '↓';
+    font-size: 20px;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250,250,250,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  nav a {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cinza);
+    text-decoration: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  nav a:hover { color: var(--roxo); background: var(--roxo-bg); }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 80px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--roxo);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 48px;
+    color: var(--preto);
+  }
+
+  .section-title em {
+    font-style: normal;
+    color: var(--roxo);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(130,10,209,0.2), transparent);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── JORNADA SEE-THINK-DO-CARE ── */
+  .journey-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    background: var(--preto);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .journey-card {
+    background: var(--branco);
+    padding: 36px 32px;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.35s ease;
+  }
+
+  /* colored accent bar on left, hidden by default */
+  .journey-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent, var(--roxo));
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .journey-card:hover::before { transform: scaleY(1); }
+
+  .journey-card.see   { --accent: #820AD1; }
+  .journey-card.think { --accent: #0077CC; }
+  .journey-card.do    { --accent: #00875A; }
+  .journey-card.care  { --accent: #D14900; }
+
+  .journey-card:hover { background: #FAFAFA; }
+  .journey-card.see:hover   { background: #F8F0FF; }
+  .journey-card.think:hover { background: #EEF5FF; }
+  .journey-card.do:hover    { background: #EDFAF3; }
+  .journey-card.care:hover  { background: #FFF4EE; }
+
+  /* front face (always visible) */
+  .jcard-front {
+    transition: opacity 0.25s ease, transform 0.3s ease;
+  }
+
+  .journey-card:hover .jcard-front {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    position: absolute;
+  }
+
+  /* back face (visible on hover) */
+  .jcard-back {
+    position: absolute;
+    inset: 0;
+    padding: 32px 32px 28px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease 0.05s, transform 0.3s ease 0.05s;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .journey-card:hover .jcard-back {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* front elements */
+  .stage-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent, var(--roxo));
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .stage-word {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(38px, 5vw, 56px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--preto);
+    margin-bottom: 6px;
+  }
+
+  .stage-sub {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cinza);
+    margin-bottom: 20px;
+  }
+
+  .stage-teaser {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--cinza);
+  }
+
+  /* back elements */
+  .back-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent, var(--roxo));
+    margin-bottom: 10px;
+  }
+
+  .back-desc {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 16px;
+  }
+
+  .back-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .back-tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--accent, var(--roxo));
+    color: var(--accent, var(--roxo));
+    background: transparent;
+    opacity: 0.85;
+  }
+
+  .hover-hint {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    font-size: 11px;
+    color: rgba(0,0,0,0.2);
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+  }
+
+  .journey-card:hover .hover-hint { opacity: 0; }
+
+  @media (max-width: 600px) {
+    .journey-grid { grid-template-columns: 1fr; }
+    .journey-card:hover .jcard-front { position: static; opacity: 1; transform: none; }
+    .jcard-back { display: none; }
+  }
+
+  /* ── FUNIL ── */
+  .funil-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .funil-step {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .funil-step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+  }
+
+  .funil-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 28px 16px;
+    text-align: center;
+    color: #fff;
+    gap: 8px;
+  }
+
+  .funil-left .f-icon { font-size: 28px; }
+  .funil-left .f-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .funil-left .f-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .funil-right {
+    background: #fff;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+
+  .funil-col h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cinza);
+    margin-bottom: 8px;
+  }
+
+  .funil-col p, .funil-col li {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .funil-col ul { list-style: none; }
+  .funil-col ul li::before {
+    content: '→ ';
+    color: var(--roxo);
+    font-weight: 700;
+  }
+
+  .tofu-bg { background: var(--tofu-cor); }
+  .mofu-bg { background: var(--mofu-cor); }
+  .bofu-bg { background: var(--bofu-cor); }
+  .pos-bg  { background: var(--pos-cor); }
+
+  /* ── ANÁLISE CRÍTICA ── */
+  .critica-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .critica-card {
+    border-radius: 14px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .critica-card.verde {
+    background: #F0FBF1;
+    border: 1.5px solid #6BCB77;
+  }
+  .critica-card.laranja {
+    background: #FFF8F0;
+    border: 1.5px solid #FFB347;
+  }
+  .critica-card.vermelho {
+    background: #FFF0F0;
+    border: 1.5px solid #FF6B6B;
+  }
+  .critica-card.azul {
+    background: #F0F6FF;
+    border: 1.5px solid #4D96FF;
+  }
+
+  .critica-card .c-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+  .critica-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--preto);
+  }
+  .critica-card p {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #444;
+  }
+
+  /* ── INSIGHT ── */
+  @keyframes orb-drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(-30px, 20px) scale(1.08); }
+    66%       { transform: translate(20px, -15px) scale(0.95); }
+  }
+
+  @keyframes word-in {
+    from { opacity: 0; transform: translateY(18px); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+
+  .insight-box {
+    background: var(--preto);
+    border-radius: 20px;
+    padding: 52px 48px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .insight-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .insight-orb-1 {
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(130,10,209,0.45) 0%, transparent 65%);
+    right: -80px; top: -80px;
+    animation: orb-drift 8s ease-in-out infinite;
+  }
+  .insight-orb-2 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(199,125,255,0.2) 0%, transparent 70%);
+    left: -60px; bottom: -60px;
+    animation: orb-drift 11s ease-in-out infinite reverse;
+  }
+
+  .insight-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .insight-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--roxo-claro);
+    margin-bottom: 20px;
+    display: block;
+    opacity: 0;
+    animation: word-in 0.6s ease forwards 0.2s;
+  }
+
+  .insight-phrase {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(22px, 3.5vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em;
+    justify-content: center;
+  }
+
+  .insight-phrase .w {
+    opacity: 0;
+    animation: word-in 0.5s ease forwards;
+    display: inline-block;
+  }
+
+  .insight-sub {
+    font-size: 14px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.5);
+    max-width: 520px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: word-in 0.6s ease forwards 1.4s;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 12px;
+    color: rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    nav { gap: 0; overflow-x: auto; justify-content: flex-start; padding: 0 16px; }
+    nav a { padding: 6px 10px; font-size: 10px; }
+    .funil-step { grid-template-columns: 1fr; }
+    .funil-left { flex-direction: row; padding: 16px 20px; justify-content: flex-start; gap: 16px; }
+    .insight-box { padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Atividade Prática — EDA · Marketing Digital</div>
+  <h1>Nubank<span>Jornada & Funil</span></h1>
+  <p class="hero-sub">Análise da estratégia digital · SEE–THINK–DO–CARE · TOFU–MOFU–BOFU</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="val">+100M</span>
+      <span class="lbl">Clientes</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="val">#1</span>
+      <span class="lbl">Fintech fora da Ásia</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="val">2013</span>
+      <span class="lbl">Fundação</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="val">100% Digital</span>
+      <span class="lbl">Modelo de negócio</span>
+    </div>
+  </div>
+  <div class="scroll-cta">role para baixo</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#jornada">Jornada</a>
+  <a href="#funil">Funil</a>
+  <a href="#critica">Análise Crítica</a>
+  <a href="#insight">Insight-Chave</a>
+</nav>
+
+<!-- JORNADA -->
+<section id="jornada">
+  <div class="section-label">Modelo SEE–THINK–DO–CARE (Kaushik)</div>
+  <div class="section-title">Jornada do<br><em>Consumidor Nubank</em></div>
+
+  <div class="journey-grid">
+
+    <!-- SEE -->
+    <div class="journey-card see">
+      <div class="jcard-front">
+        <span class="stage-num">Etapa 01</span>
+        <div class="stage-word">SEE</div>
+        <div class="stage-sub">Descoberta</div>
+        <p class="stage-teaser">Como o consumidor conhece o Nubank pela primeira vez.</p>
+      </div>
+      <div class="jcard-back">
+        <div class="back-title">Canais & Ações</div>
+        <p class="back-desc">Boca a boca digital, memes virais e influenciadores. Campanhas como <em>"N Possibilidades"</em> no Instagram e TikTok geram awareness massivo entre jovens.</p>
+        <div class="back-tags">
+          <span class="back-tag">Instagram Reels</span>
+          <span class="back-tag">TikTok</span>
+          <span class="back-tag">YouTube</span>
+          <span class="back-tag">Influenciadores</span>
+          <span class="back-tag">Google Ads</span>
+        </div>
+      </div>
+      <span class="hover-hint">passe o mouse ↗</span>
+    </div>
+
+    <!-- THINK -->
+    <div class="journey-card think">
+      <div class="jcard-front">
+        <span class="stage-num">Etapa 02</span>
+        <div class="stage-word">THINK</div>
+        <div class="stage-sub">Consideração</div>
+        <p class="stage-teaser">O que ajuda o lead a avaliar e considerar trocar de banco.</p>
+      </div>
+      <div class="jcard-back">
+        <div class="back-title">Canais & Ações</div>
+        <p class="back-desc">SEO forte no Google, reviews de clientes e depoimentos reais. O case da <em>sanduicheira roxa</em> virou prova social espontânea.</p>
+        <div class="back-tags">
+          <span class="back-tag">SEO</span>
+          <span class="back-tag">Google Reviews</span>
+          <span class="back-tag">Facebook Ads</span>
+          <span class="back-tag">Depoimentos</span>
+          <span class="back-tag">Reclame Aqui</span>
+        </div>
+      </div>
+      <span class="hover-hint">passe o mouse ↗</span>
+    </div>
+
+    <!-- DO -->
+    <div class="journey-card do">
+      <div class="jcard-front">
+        <span class="stage-num">Etapa 03</span>
+        <div class="stage-word">DO</div>
+        <div class="stage-sub">Conversão</div>
+        <p class="stage-teaser">A abertura de conta — 100% digital, em menos de 5 minutos.</p>
+      </div>
+      <div class="jcard-back">
+        <div class="back-title">Canais & Ações</div>
+        <p class="back-desc">Onboarding 100% pelo app, sem papelada ou agência. Aprovação em tempo real. Link de indicação com benefícios acelera a conversão.</p>
+        <div class="back-tags">
+          <span class="back-tag">App iOS & Android</span>
+          <span class="back-tag">nu.com.br</span>
+          <span class="back-tag">App Store</span>
+          <span class="back-tag">Indicação</span>
+        </div>
+      </div>
+      <span class="hover-hint">passe o mouse ↗</span>
+    </div>
+
+    <!-- CARE -->
+    <div class="journey-card care">
+      <div class="jcard-front">
+        <span class="stage-num">Etapa 04</span>
+        <div class="stage-word">CARE</div>
+        <div class="stage-sub">Pós-venda</div>
+        <p class="stage-teaser">Como o Nubank retém clientes e os transforma em fãs.</p>
+      </div>
+      <div class="jcard-back">
+        <div class="back-title">Canais & Ações</div>
+        <p class="back-desc">Atendimento humanizado via chat no app, resolução pelo Instagram. NuInvest, NuCel e NuSeguro criam ecossistema de retenção difícil de abandonar.</p>
+        <div class="back-tags">
+          <span class="back-tag">Chat no app</span>
+          <span class="back-tag">Push notifications</span>
+          <span class="back-tag">#SouNu</span>
+          <span class="back-tag">NuInvest</span>
+          <span class="back-tag">NuCel</span>
+        </div>
+      </div>
+      <span class="hover-hint">passe o mouse ↗</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FUNIL -->
+<section id="funil">
+  <div class="section-label">Framework TOFU–MOFU–BOFU–Pós-venda</div>
+  <div class="section-title">Funil de<br><em>Conversão Completo</em></div>
+
+  <div class="funil-wrapper">
+
+    <!-- TOFU -->
+    <div class="funil-step">
+      <div class="funil-left tofu-bg">
+        <span class="f-icon">🔝</span>
+        <span class="f-label">Topo do funil</span>
+        <span class="f-name">TOFU</span>
+      </div>
+      <div class="funil-right">
+        <div class="funil-col">
+          <h4>Canais</h4>
+          <ul>
+            <li>Instagram & TikTok (Reels, Stories)</li>
+            <li>YouTube (vídeos curtos)</li>
+            <li>Influenciadores digitais</li>
+            <li>Google Ads (Display)</li>
+            <li>TV aberta (Jornal Nacional)</li>
+          </ul>
+        </div>
+        <div class="funil-col">
+          <h4>Objetivo</h4>
+          <p>Gerar <strong>awareness</strong> massivo e construir reconhecimento de marca como alternativa humana e sem burocracia aos bancos tradicionais.</p>
+        </div>
+        <div class="funil-col">
+          <h4>Exemplos Reais</h4>
+          <ul>
+            <li>Campanha "N Possibilidades" (Wieden+Kennedy, mai/24)</li>
+            <li>Reels com memes financeiros no Instagram</li>
+            <li>Vídeos de influenciadores compartilhando experiências</li>
+            <li>Hashtag viral #SouNu com +14,5k posts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOFU -->
+    <div class="funil-step">
+      <div class="funil-left mofu-bg">
+        <span class="f-icon">🎯</span>
+        <span class="f-label">Meio do funil</span>
+        <span class="f-name">MOFU</span>
+      </div>
+      <div class="funil-right">
+        <div class="funil-col">
+          <h4>Canais</h4>
+          <ul>
+            <li>SEO (Google orgânico)</li>
+            <li>Facebook Ads (remarketing)</li>
+            <li>Google Ads (Search)</li>
+            <li>E-mail marketing</li>
+            <li>Google Reviews / Reclame Aqui</li>
+          </ul>
+        </div>
+        <div class="funil-col">
+          <h4>Objetivo</h4>
+          <p>Nutrir o lead, <strong>educar financeiramente</strong> e construir confiança suficiente para que o prospect considere seriamente trocar de banco.</p>
+        </div>
+        <div class="funil-col">
+          <h4>Exemplos Reais</h4>
+          <ul>
+            <li>Artigos comparativos no Google (SEO orgânico)</li>
+            <li>Comparativos Nubank vs bancos tradicionais</li>
+            <li>Depoimentos de clientes nas redes sociais</li>
+            <li>Testes A/B em campanhas de performance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOFU -->
+    <div class="funil-step">
+      <div class="funil-left bofu-bg">
+        <span class="f-icon">💳</span>
+        <span class="f-label">Fundo do funil</span>
+        <span class="f-name">BOFU</span>
+      </div>
+      <div class="funil-right">
+        <div class="funil-col">
+          <h4>Canais</h4>
+          <ul>
+            <li>Site oficial nu.com.br</li>
+            <li>App (iOS & Android)</li>
+            <li>Google Play / App Store</li>
+            <li>Google Shopping Ads</li>
+            <li>Links de indicação (member-get-member)</li>
+          </ul>
+        </div>
+        <div class="funil-col">
+          <h4>Objetivo</h4>
+          <p>Converter o interesse em <strong>abertura de conta</strong> ou solicitação de cartão, com a menor fricção possível — em menos de 5 minutos, 100% no celular.</p>
+        </div>
+        <div class="funil-col">
+          <h4>Exemplos Reais</h4>
+          <ul>
+            <li>Onboarding 100% digital pelo app</li>
+            <li>CTA "Pedir cartão grátis" com zero anuidade</li>
+            <li>Aprovação em tempo real via app</li>
+            <li>Indicação de amigos com benefícios</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PÓS-VENDA -->
+    <div class="funil-step">
+      <div class="funil-left pos-bg">
+        <span class="f-icon">♾️</span>
+        <span class="f-label">Fidelização</span>
+        <span class="f-name">PÓS-VENDA</span>
+      </div>
+      <div class="funil-right">
+        <div class="funil-col">
+          <h4>Canais</h4>
+          <ul>
+            <li>Chat no app (SAC humanizado)</li>
+            <li>Push notifications personalizadas</li>
+            <li>E-mail com dicas financeiras</li>
+            <li>Comunidade Instagram / X</li>
+            <li>NuInvest, NuSeguro, NuCel</li>
+          </ul>
+        </div>
+        <div class="funil-col">
+          <h4>Objetivo</h4>
+          <p>Reter o cliente, aumentar o <strong>LTV</strong> (lifetime value) através de cross-sell de produtos do ecossistema Nu e transformar clientes em <strong>promotores</strong> da marca.</p>
+        </div>
+        <div class="funil-col">
+          <h4>Exemplos Reais</h4>
+          <ul>
+            <li>Case da sanduicheira roxa (atendimento viral)</li>
+            <li>Notificações de gastos em tempo real</li>
+            <li>Programa de pontos Nubank Rewards</li>
+            <li>Resolução de problemas via Instagram</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ANÁLISE CRÍTICA -->
+<section id="critica">
+  <div class="section-label">Avaliação Estratégica</div>
+  <div class="section-title">Análise<br><em>Crítica</em></div>
+
+  <div class="critica-grid">
+
+    <div class="critica-card verde">
+      <span class="c-icon">🏆</span>
+      <h3>O que fazem muito bem</h3>
+      <p>A comunicação humanizada nas redes sociais é incomparável no setor financeiro. O Nubank transformou clientes em promotores orgânicos — o #SouNu virou identidade. O atendimento via chat no app e pelas redes, com tom de conversa real, quebrou o padrão frio dos bancos. O onboarding 100% digital eliminou a fricção total da jornada de conversão.</p>
+    </div>
+
+    <div class="critica-card laranja">
+      <span class="c-icon">⚠️</span>
+      <h3>Pontos falhos na jornada</h3>
+      <p>A fase de <strong>consideração (THINK)</strong> fica sobrecarregada para públicos mais velhos ou menos familiarizados com finanças digitais. O blog é forte para quem já procura, mas o Nubank poderia criar mais conteúdo educativo em vídeo (YouTube) para capturar públicos fora do Instagram. A gestão de reclamações no Reclame Aqui ainda gera atritos pontuais.</p>
+    </div>
+
+    <div class="critica-card vermelho">
+      <span class="c-icon">🔍</span>
+      <h3>Onde perde mais oportunidades</h3>
+      <p>A maior perda ocorre na transição <strong>TOFU → MOFU</strong>: a marca gera alto awareness, mas muitas pessoas que veem o conteúdo viral não avançam para a consideração real. O Nubank poderia investir mais em fluxos de nutrição automatizados (e-mail sequences, retargeting segmentado) para quem interagiu mas não converteu.</p>
+    </div>
+
+    <div class="critica-card azul">
+      <span class="c-icon">💡</span>
+      <h3>O que eu faria para melhorar</h3>
+      <p>1) <strong>Criar funil de nutrição no WhatsApp</strong> para públicos 35+ usando o Z-API ou similar, com conteúdo financeiro personalizado.<br><br>2) <strong>Ampliar presença no YouTube</strong> com vídeos de finanças pessoais (MOFU), já que é onde o público busca decisões de maior valor.<br><br>3) <strong>Gamificar mais o pós-venda</strong> — missões e recompensas dentro do app para aumentar o uso diário e o cross-sell de produtos como NuInvest.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INSIGHT CHAVE -->
+<section id="insight" style="padding-bottom: 100px;">
+  <div class="section-label">Para a Apresentação</div>
+  <div class="section-title">Insight<br><em>Chave</em></div>
+
+  <div class="insight-box">
+    <div class="insight-orb insight-orb-1"></div>
+    <div class="insight-orb insight-orb-2"></div>
+    <div class="insight-inner">
+      <span class="insight-label">Principal Takeaway</span>
+      <div class="insight-phrase" id="insight-phrase"></div>
+      <p class="insight-sub">O cliente satisfeito vira canal de aquisição — e esse é o modelo de marketing mais eficiente que existe.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const phrase = "O Nubank não vende produto. Vende libertação da burocracia.";
+  const words = phrase.split(" ");
+  const container = document.getElementById("insight-phrase");
+  words.forEach((word, i) => {
+    const span = document.createElement("span");
+    span.className = "w";
+    span.textContent = word;
+    span.style.animationDelay = (0.5 + i * 0.09) + "s";
+    container.appendChild(span);
+  });
+</script>
+
+<footer>
+  EDA · Estratégia Digital Aplicada &nbsp;·&nbsp; Análise: Nubank &nbsp;·&nbsp; 2026
+</footer>
+
+</body>
+</html>
